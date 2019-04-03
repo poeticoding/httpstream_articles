@@ -81,7 +81,7 @@ defmodule HTTPStream do
   end
 
   defp next_lines(<<"\n"::utf8, rest::binary>>,current_line,lines) do
-    next_lines(rest,"",[current_line <> "\n" | lines])  
+    next_lines(rest,"",[<<current_line::binary,"\n"::utf8>> | lines])  
   end
 
   defp next_lines(<<c::utf8, rest::binary>>,current_line,lines) do
