@@ -1,7 +1,5 @@
 defmodule HTTPStream do
 
-
-
   def get(url,emit_end\\false) do
 
     Stream.resource(
