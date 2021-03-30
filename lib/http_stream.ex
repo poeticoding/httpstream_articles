@@ -53,44 +53,12 @@ defmodule HTTPStream do
     end
   end
 
-  def lines(enum), do: lines(enum, :string_split)
-
-  def lines(enum, :next_lines) do
+  def lines(enum), do:
     enum
-    |> Stream.transform("",&next_lines/2)
-  end
+    |> Stream.chunk_by(&String.ends_with?(&1, "\n"))
+    |> Stream.map(&Enum.join/1)
+    |> Stream.flat_map(&Regex.split(~r/(?<=\n)/, &1, trim: true)) # case the chunk already contains more than one line
 
-  def lines(enum, :string_split) do
-    enum
-    |> Stream.transform("",fn 
-      :end, acc -> 
-        {[acc],""}
-      chunk, acc ->
-        [last_line | lines] = 
-          String.split(acc <> chunk,"\n")
-          |> Enum.reverse()
-        {Enum.reverse(lines),last_line}
-    end)
-  end
-
-
-  defp next_lines(:end,prev), do: {[prev], ""}
-  defp next_lines(chunk,current_line) do
-    # :erlang.garbage_collect()
-    next_lines(chunk,current_line,[])
-  end
-
-  defp next_lines(<<"\n"::utf8, rest::binary>>,current_line,lines) do
-    next_lines(rest,"",[<<current_line::binary,"\n"::utf8>> | lines])  
-  end
-
-  defp next_lines(<<c::utf8, rest::binary>>,current_line,lines) do
-    next_lines(rest,<<current_line::binary, c::utf8>>,lines)
-  end
-    
-  defp next_lines(<<>>,current_line,lines) do
-    {Enum.reverse(lines), current_line}
-  end
 
 
 end
