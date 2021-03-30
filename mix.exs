@@ -22,7 +22,8 @@ defmodule HTTPStream.MixProject do
   defp deps do
     [
       {:httpoison, "~> 1.5"},
-      {:benchee, "~> 1.0", only: :dev}
+      {:benchee, "~> 1.0", only: :dev},
+      {:bypass, "~> 2.1", only: :test},
     ]
   end
 end
